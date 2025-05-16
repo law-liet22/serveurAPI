@@ -1,0 +1,6 @@
+Créer .env 
+
+PORT=
+HOST_MYSQL=
+USER_MYSQL=
+DATABASE=
