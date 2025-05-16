@@ -38,6 +38,7 @@ router.get('/', (req, res) => {
             res.json(data);
         }
     });
+    retourLigne(2);
 });
 
 router.post('/ajouter', (req, res) => {
@@ -84,6 +85,7 @@ router.post('/ajouter', (req, res) => {
             );
         }
     });
+    retourLigne(2);
 });
 
 router.patch('/modifier/:cl', (req, res) => {
@@ -127,6 +129,7 @@ router.patch('/modifier/:cl', (req, res) => {
             );
         }
     });
+    retourLigne(2);
 });
 
 router.delete('/supprimer/:cl', (req, res) => {
@@ -164,5 +167,6 @@ router.delete('/supprimer/:cl', (req, res) => {
             );
         }
     });
+    retourLigne(2);
 });
 module.exports = router;

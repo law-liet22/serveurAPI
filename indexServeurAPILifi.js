@@ -1,5 +1,13 @@
 require('dotenv').config();
 
+function retourLigne(nbrBr = 1)
+{
+    for(i = 0; i < nbrBr; i++)
+    {
+        console.log(" ");
+    }
+}
+
 const bodyParser = require('body-parser')
 
 const firsEndpoint = "/api/v1";
@@ -36,4 +44,5 @@ app.use(firsEndpoint + '/data', dataRoutes);
 app.use(firsEndpoint + '/lampes', lampesRoute);
 
 // Demarrer le serveur
-app.listen(PORT, () => console.log(`Serveur API sur http://localhost:${PORT}`)); //
+app.listen(PORT, () => console.log(`Serveur API sur http://localhost:${PORT}`));
+retourLigne(2);
