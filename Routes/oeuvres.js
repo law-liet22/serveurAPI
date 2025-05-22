@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/oeuvreLifi:cl', (req, res) => { 
+router.get('/oeuvreLifi/:cl', (req, res) => { 
     const cl = req.params.cl;
     const data={};
 
@@ -204,7 +204,7 @@ router.get('/desc/:cl', (req, res) => {
             if(result == "")
             {
                 console.log("Description de l'oeuvre non trouvee pour l'oeuvre avec le code hexa : " + cl);
-                res.status(404).send({message: "Il n'y a pas d'oeuvre avec cet identifiant hexa"});
+                res.status(404).send({message: "Il n'y a pas d'oeuvre avec cet identifiant hexa. Vérifiez votre entrée."});
             }
             else
             {
@@ -233,7 +233,7 @@ router.get('/id', (req, res) => {
         {
             if(result == "")
             {
-                console.log("Description de l'oeuvre non trouvee pour l'oeuvre avec le code hexa : " + cl);
+                console.log("Identifiants de l'oeuvre non trouves");
                 res.status(404).send({message: "Il n'y a pas d'oeuvres"});
             }
             else
@@ -246,3 +246,33 @@ router.get('/id', (req, res) => {
     });
 });
 module.exports = router;
+
+router.get('/liens', (req, res) => {
+    const data = {};
+
+    const sql = 'SELECT url, nom_oeuvre FROM Oeuvres;'
+
+    db.query(sql, (err, result) => {
+        console.log("Requete envoyee pour recuperer les liens des oeuvres");
+
+        if(err)
+        {
+            console.error("Erreur lors de l'obtention des oeuvres");
+            res.status(500).send({error: "Erreur serveur"});
+        }
+        else
+        {
+            if(result.length==0)
+            {
+                console.log("Aucune URL trouvee");
+                res.status(404).send({message: "Il n'y a pas d'oeuvre avec une URL"});
+            }
+            else
+            {
+                console.log("Obtention de chaque URL");
+                data.oeuvres = result;
+                res.json(data.oeuvres); 
+            }           
+        }
+    });
+});

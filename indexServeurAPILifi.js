@@ -36,6 +36,9 @@ app.use(express.json()); //Gérer les réponses Json --- middleware
 // app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
+const cors = require('cors');
+app.use(cors());
+
 // Import des différents modules créés pour l'API
 app.use(firsEndpoint + '/tablettes', tablettesRoutes);
 app.use(firsEndpoint + '/emprunts', empruntsRoutes);
