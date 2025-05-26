@@ -16,6 +16,7 @@ const empruntsRoutes = require('./Routes/emprunts');
 const oeuvresRoutes = require('./Routes/oeuvres');
 const dataRoutes = require('./Routes/data');
 const lampesRoute = require('./Routes/lampes');
+const comptesRoute = require('./Routes/compteEmploye')
 
 const express = require('express'); //Créer des serveurs web en Node.js
 const app = express();  //Cette ligne crée une instance de l'application Express, qui est utilisée pour configurer et démarrer le serveur.
@@ -45,6 +46,7 @@ app.use(firsEndpoint + '/emprunts', empruntsRoutes);
 app.use(firsEndpoint + '/oeuvres', oeuvresRoutes);
 app.use(firsEndpoint + '/data', dataRoutes);
 app.use(firsEndpoint + '/lampes', lampesRoute);
+app.use(firsEndpoint + '/comptes/employes', comptesRoute);
 
 // Demarrer le serveur
 app.listen(PORT, () => console.log(`Serveur API sur http://localhost:${PORT}`));

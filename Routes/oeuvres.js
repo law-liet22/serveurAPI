@@ -10,7 +10,8 @@ const jsonParser = bodyParser.json();
 router.get('/', (req, res) => {
     const data = {};
 
-    db.query('SELECT * FROM Oeuvres ', (err, results) => {
+    db.query(`SELECT id AS id_oeuvre, nom_oeuvre, nom_auteur, date_oeuvre, description, code_hexa AS id_hexa, 
+        url FROM Oeuvres;`, (err, results) => {
         if (err) {
             console.error("Erreur lors de la requete : ", err);
             res.status(500).send("Erreur serveur");
@@ -219,7 +220,8 @@ router.get('/desc/:cl', (req, res) => {
 router.get('/id', (req, res) => {
     const data = {};
 
-    const sql = 'SELECT id, nom_oeuvre, code_hexa FROM Oeuvres;';
+    const sql = `SELECT Oeuvres.id AS id_oeuvre, nom_oeuvre, Lampes.code_hexa FROM Oeuvres
+    INNER JOIN Lampes ON Oeuvres.code_hexa = Lampes.id;`;
 
     db.query(sql, (err, result) => {
         console.log("Requete envoyee pour obtenir les oeuvres (id, nom, code_hexa) ");
@@ -245,7 +247,6 @@ router.get('/id', (req, res) => {
         }
     });
 });
-module.exports = router;
 
 router.get('/liens', (req, res) => {
     const data = {};
@@ -276,3 +277,42 @@ router.get('/liens', (req, res) => {
         }
     });
 });
+
+// router.patch('/hexa/:id', (req, res) => {
+//     const data = {};
+
+//     const code_hexa = req.body;
+//     const id = req.params;
+
+//     const sqlVerif = `SELECT id FROM Lampes WHERE code_hexa='${code_hexa}';`;
+
+//     db.query(sqlVerif, (err, result) => {
+//         console.log(`Requete envoyee pour verifier si lampe avec code ${code_hexa} existe bien.`);
+
+//         if(err)
+//         {
+//             console.error("Erreur lors de l'obtention des lampes");
+//             res.status(500).send({error: "Erreur serveur"});
+//             return;
+//         }
+//         else
+//         {
+//             if(result.length == 0)
+//             {
+//                 console.log(`Aucune lampe avec le code_hexa ${code_hexa} n'existe.`);
+//                 res.status(404).send({message: `Aucune lampe avec le code hexa ${code_hexa} n'existe.
+//                      Mise à jour impossible.`});                
+//             }
+//             else
+//             {
+//                 console.log(`Une lampe avec le code_hexa ${code_hexa} a ete trouvee.`);
+//                 res.status(200).send({message: result});
+                
+//                 const sql = `UPDATE Oeuvres SET code_hexa='${result}' WHERE id='${id}';`
+//             }
+//         }
+
+//     });
+// });
+
+module.exports = router;
