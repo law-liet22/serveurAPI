@@ -278,41 +278,11 @@ router.get('/liens', (req, res) => {
     });
 });
 
-// router.patch('/hexa/:id', (req, res) => {
-//     const data = {};
+router.patch('/modifier/:id', (req, res) => {
+    const id = req.params.id;
+    const {nom_oeuvre, nom_auteur, date_oeuvre, code_hexa, url, description} = req.body;
 
-//     const code_hexa = req.body;
-//     const id = req.params;
-
-//     const sqlVerif = `SELECT id FROM Lampes WHERE code_hexa='${code_hexa}';`;
-
-//     db.query(sqlVerif, (err, result) => {
-//         console.log(`Requete envoyee pour verifier si lampe avec code ${code_hexa} existe bien.`);
-
-//         if(err)
-//         {
-//             console.error("Erreur lors de l'obtention des lampes");
-//             res.status(500).send({error: "Erreur serveur"});
-//             return;
-//         }
-//         else
-//         {
-//             if(result.length == 0)
-//             {
-//                 console.log(`Aucune lampe avec le code_hexa ${code_hexa} n'existe.`);
-//                 res.status(404).send({message: `Aucune lampe avec le code hexa ${code_hexa} n'existe.
-//                      Mise à jour impossible.`});                
-//             }
-//             else
-//             {
-//                 console.log(`Une lampe avec le code_hexa ${code_hexa} a ete trouvee.`);
-//                 res.status(200).send({message: result});
-                
-//                 const sql = `UPDATE Oeuvres SET code_hexa='${result}' WHERE id='${id}';`
-//             }
-//         }
-
-//     });
-// });
+    const sql = `ALTER TABLE Oeuvres `
+});
 
 module.exports = router;
