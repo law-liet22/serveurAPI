@@ -39,6 +39,10 @@ router.get('/:id', (req, res) => {
             console.error('Erreur lors de l\'obtention de la tablette : ' + id);
             res.status(500).send({ error: 'Erreur serveur' });
         }
+        if(result.length <= 0)
+        {
+            res.status(404).send({messagel: `Aucune tablette avec le code-barre ${id} n'a été trouvée.`});
+        }
         else {
             console.log("Obtention des tablettes");
 
@@ -48,22 +52,84 @@ router.get('/:id', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
-    const { estEmpruntee, dateDernierEmprunt, dernierNiveauBatterie, codeBarre } = req.body;
+router.patch('/codeBarre/:nomTab', (req, res) => {
+    const { codeBarre } = req.body;
+    const nomTab = req.params.nomTab;
 
-    if (!estEmpruntee || !dateDernierEmprunt || !dernierNiveauBatterie || !codeBarre) {
-        return res.status(400).send({ error: 'Tous les champs sont obligatoires : estEmpruntee, dateDernierEmprunt, dernierNiveauBatterie, codeBarre' });
+    if (!codeBarre) {
+        return res.status(400).send({ error: 'Tous les champs sont obligatoires : codeBarre' });
     }
 
-    const sql = 'INSERT INTO Tablettes (estEmpruntee, dateDernierEmprunt, dernierNiveauBatterie, codeBarre) VALUES (?, ?, ?, ?);';
-    db.query(sql, [estEmpruntee, dateDernierEmprunt, dernierNiveauBatterie, codeBarre], (err, result) => {
+    const sql = `UPDATE Tablettes SET codeBarre='${codeBarre}' WHERE nomTablette='${nomTab}';`;
+    db.query(sql, (err, result) => {
 
         if (err) {
-            console.error('Erreur lors de l\'ajout de l\'utilisateur : ', err);
+            console.error("Erreur lors de la modification du code barre de la tablette", err);
             res.status(500).send({ error: 'Erreur serveur' });
         }
         else {
-            res.status(201).send({ message: 'Utilisateur ajoute avec succes !', id: result.inserId });
+            res.status(201).send({ message: 'Tablette modifiée avec succès !', id: result.inserId });
+        }
+    });
+});
+
+router.patch('/nom/:cb', (req, res) => {
+    const nomTablette = req.body;
+    const cb = req.params.cb;
+
+    if(!nomTablette)
+    {
+        return res.status(400).send({ error: 'Tous les champs sont obligatoires : nomTablette' });
+    }
+
+    const sqlVerif = `SELECT * FROM Tablettes WHERE codeBarre=${cb};`;
+
+    db.query(sqlVerif, (errV, resultV) => {
+        if(errV)
+        {
+            console.error("Erreur lors de la modification du nom de la tablette", errV);
+            res.status(500).send({ error: 'Erreur serveur' });
+        }
+        else if(resultV.length <= 0)
+        {
+            return res.status(404).send({message: `Il n'y a aucune tablette avec le code barre ${cb}.`});
+        }
+        else
+        {
+            const sql = `UPDATE Tablettes SET ? WHERE codeBarre='${cb}';`;
+            db.query(sql, [nomTablette], (err, result) => {
+                if(err)
+                {
+                    console.error("Erreur lors de la modification du nom de la tablette", err);
+                    res.status(500).send({ error: 'Erreur serveur' });
+                }
+                else
+                {
+                    res.status(201).send({ message: 'Tablette modifiée avec succès !', id: result.inserId });
+                }
+            });
+        }
+    });
+});
+
+router.post('/', (req, res) => {
+    const { nomTablette, codeBarre } = req.body;
+
+    if(!nomTablette || !codeBarre)
+    {
+        return res.status(400).send({error: `Tous les champs sont obligatoires : nomTablette, codeBarre`});
+    }
+    const sql = `INSERT INTO Tablettes (nomTablette, codeBarre) VALUES (?, ?)`;
+
+    db.query(sql, [nomTablette, codeBarre], (err, result) => {
+        if(err)
+        {
+            console.error(`Erreur lors de l'ajout de la tablette`, err);
+            res.status(500).send({ error: 'Erreur serveur' });
+        }
+        else
+        {
+            res.status(201).send({message: `Tablette ajoutée avec succès`})
         }
     });
 });
@@ -88,6 +154,46 @@ router.patch('/update-tablette/:nom/codeBarre/:cb', (req, res) => {
 	    console.log(result);
             data.tablette = result;
             res.json(data);
+        }
+    });
+});
+
+router.patch('/emprunt/:cb', (req, res) => {
+    const estEmpruntee = req.body;
+    const cb = req.params.cb;
+
+    if(!estEmpruntee)
+    {
+        return res.status(400).send({error: `Tous les champs sont obligatoires : nomTablette, codeBarre`});
+    }
+
+    const sqlVerif = `SELECT * FROM Tablettes WHERE codeBarre='${cb}';`;
+
+    db.query(sqlVerif, (errV, resultV) => {
+        if(errV)
+        {
+            console.error(`Erreur lors de l'ajout de la tablette`, errV);
+            res.status(500).send({ error: 'Erreur serveur' });
+        }
+        else if(resultV <= 0)
+        {
+            console.log(`Aucune tablette n'a ete trouvee avec le code barre ${cb}.`);
+            return res.status(404).send({message: `Aucune tablette n'a été trouvée avec le code barre ${cb}.`})
+        }
+        else
+        {
+            const sql = `UPDATE Tablettes SET ? WHERE codeBarre='${cb}';`;
+            db.query(sql, estEmpruntee, (err, result) => {
+                if(err)
+                {
+                    console.error(`Erreur lors de l'ajout de la tablette`, err);
+                    res.status(500).send({ error: 'Erreur serveur' });
+                }
+                else
+                {
+                    res.status(201).send({message: `Statut de l'emprunt modifié avec succès.`})
+                }
+            });
         }
     });
 });
