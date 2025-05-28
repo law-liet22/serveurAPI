@@ -278,11 +278,11 @@ router.get('/liens', (req, res) => {
     });
 });
 
-router.patch('/modifier/:id', (req, res) => {
-    const id = req.params.id;
-    const {nom_oeuvre, nom_auteur, date_oeuvre, code_hexa, url, description} = req.body;
+// router.patch('/modifier/:id', (req, res) => {
+//     const id = req.params.id;
+//     const {nom_oeuvre, nom_auteur, date_oeuvre, code_hexa, url, description} = req.body;
 
-    const sql = `ALTER TABLE Oeuvres `
-});
+//     const sql = `ALTER TABLE Oeuvres `
+// });
 
 module.exports = router;
