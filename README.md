@@ -1,4 +1,4 @@
-Créer .env 
+Créer .env à la racine du projet
 
 PORT=
  
