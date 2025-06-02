@@ -33,32 +33,64 @@ router.get('/', (req, res) => { //Get tous les emprunts
     });
 });
 
-router.post('/', jsonParser, (req, res) => {
-    const { nomVisiteur, prenomVisiteur, mailVisiteur, photoVisiteur, tabletteEmpruntee } = req.body;
+router.post('/', (req, res) => {
+    // const { nomVisiteur, prenomVisiteur, mailVisiteur, tabletteEmpruntee } = req.body;
+    const nomVisiteur = req.body.nomVisiteur;
+    const prenomVisiteur = req.body.prenomVisiteur;
+    const mailVisiteur = req.body.mailVisiteur;
+    const tabletteEmpruntee = req.body.tabletteEmpruntee;
 
-    if (!nomVisiteur || !prenomVisiteur || !mailVisiteur || !photoVisiteur || tabletteEmpruntee) {
-        return res.status(400).send({ error: 'Tous les champs sont obligatoires : nom, prenom, mail, photo, tablette : ' + req.body });
-    }
-    else if (fs.stat(photoVisiteur, (err, fileStats) => {
-        if (err) {
-            console.error(err);
-        }
-    }) > 2097152) {
-        return res.status(401).send({ error: 'La taille de la photo ne doit pas exeder 2048 ko' })
+    if (!nomVisiteur || !prenomVisiteur || !mailVisiteur || !tabletteEmpruntee) {
+        console.log(req);
+        
+        return (res.status(400).send({ error: 'Tous les champs sont obligatoires : nom, prenom, mail, photo, tablette.' }));
     }
     else {
-        const sql = 'INSERT INTO Emprunts (nomVisiteur, prenomVisiteur, mailVisiteur, photoVisiteur, tabletteEmpruntee) VALUES (?, ?, ?, ?, ?);';
+        const date = new Date(); // Obtenir la date actuelle
+        const year = date.getFullYear(); // Obtenir l'année
+        const mounth = String(date.getMonth() + 1).padStart(2, '0'); // Mois (0 à 11) + 1 puis complète avec 0 (si besoin)
+        const day = String(date.getDate()).padStart(2, '0'); // Jour du mois, complété avec 0 si besoin
 
-        db.query(sql, [nomVisiteur, prenomVisiteur, mailVisiteur, photoVisiteur, tabletteEmpruntee], (err, result) => {
+        const dateActuelle = `${year}-${mounth}-${day}`;
+
+        const sql = 'INSERT INTO Emprunts (nomVisiteur, prenomVisiteur, mailVisiteur, tabletteEmpruntee) VALUES (?, ?, ?, ?);';
+        const sqlEmpr = `UPDATE Tablettes SET estEmpruntee='1', dateDernierEmprunt='${dateActuelle}' WHERE codeBarre='${tabletteEmpruntee}';`;
+        
+
+        db.query(sql, [nomVisiteur, prenomVisiteur, mailVisiteur, tabletteEmpruntee], (err, result) => {
             if (err) {
                 console.error('Erreur lors de l\'ajout de l\'emprunt : ', err);
-                res.status(500).send({ error: 'Erreur serveur' });
+                return res.status(500).send({ error: 'Erreur serveur' });
             }
-            else {
+            else 
+            {
+                db.query(sqlEmpr, (errE, reultE) => {
+                    if(errE)
+                    {
+                        console.error('Erreur lors de l\'ajout de l\'emprunt : ', err);
+                        return res.status(500).send({ error: 'Erreur serveur' });  
+                    }
+                });
                 res.status(201).send({ message: "Emprunt ajouté avec succes !", id: result.inserId });
             }
         });
     }
+});
+
+router.patch('/restitution/:cb', (req, res) => {
+    const codeBarre = req.params.cb;
+
+    const sql = `UPDATE Tablettes SET estEmpruntee='0' WHERE codeBarre='${codeBarre}';`;
+
+    db.query(sql, (err, result) => {
+        if(err)
+        {
+            console.error('Erreur lors de la restitution de l\'emprunt : ', err);
+            return res.status(500).send({ error: 'Erreur serveur' });
+        }
+
+        return res.status(201).send({message: `Restitution enregistrée.`});
+    });
 });
 
 router.post('/codeBarre', jsonParser, (req, res) => {
@@ -254,4 +286,3 @@ router.get('/dates/:num', (req, res) => {
 
 
 module.exports = router;
-

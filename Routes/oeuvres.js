@@ -278,11 +278,31 @@ router.get('/liens', (req, res) => {
     });
 });
 
-// router.patch('/modifier/:id', (req, res) => {
-//     const id = req.params.id;
-//     const {nom_oeuvre, nom_auteur, date_oeuvre, code_hexa, url, description} = req.body;
+router.put('/modifier/:id', (req, res) => {
+    const id = req.params.id;
+    const nom_oeuvre = req.body.nom_oeuvre;
+    const nom_auteur = req.body.nom_auteur;
+    const date_oeuvre = req.body.date_oeuvre;
+    const code_hexa = req.body.code_hexa;
+    const url = req.body.url;
+    const description = req.body.description;
 
-//     const sql = `ALTER TABLE Oeuvres `
-// });
+    const sql = `UPDATE Oeuvres SET nom_oeuvre='${nom_oeuvre}', nom_auteur='${nom_auteur}', date_oeuvre='${date_oeuvre}', description="${description}", url='${url}' WHERE id=${id};`;
+
+     if(!nom_oeuvre || !nom_auteur || !date_oeuvre || !url || !description)
+     {
+        return res.status(400).send({error: `Tous les champs sont obligatoires.`});
+     }
+
+     db.query(sql, (err, result) => {
+        if(err)
+        {
+            console.error("Erreur lors de la mise à jour d'une oeuvre : ", err);
+            return res.status(500).send({error: "Erreur serveur"});
+        }
+        
+        return res.status(201).send({message: `Modification effectuée pour l'oeuvre dont l'id est ${id}.`});
+     });
+});
 
 module.exports = router;

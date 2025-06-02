@@ -178,7 +178,7 @@ router.patch('/emprunt/:cb', (req, res) => {
         else if(resultV <= 0)
         {
             console.log(`Aucune tablette n'a ete trouvee avec le code barre ${cb}.`);
-            return res.status(404).send({message: `Aucune tablette n'a été trouvée avec le code barre ${cb}.`})
+            return res.status(404).send({message: `Aucune tablette n'a été trouvée avec le code barre  ${cb}.`})
         }
         else
         {
