@@ -48,7 +48,7 @@ router.post('/verif', (req, res) => {
 
         if(err)
         {
-            console.error(`Erreur lors de l'obtention des informations de compte utilisateur`);
+            console.error(`Erreur lors de l'obtention des informations de compte utilisateur : `, err);
             res.status(500).send({error: "Erreur serveur"});
         }
         else if(results == "")
