@@ -8,4 +8,4 @@ USER_MYSQL=
  
 DATABASE=
 
-Installer Dotenv avec `npm install dotenv`
+Installer Dotenv : `npm install dotenv`
