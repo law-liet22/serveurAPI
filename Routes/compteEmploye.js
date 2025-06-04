@@ -73,36 +73,34 @@ async function verifyUser(req, res)
     const email = req.body.email;
     const password = req.body.password;
 
-    if(!email || !password)
+    if(!email || !password) // Si le corps de la requête n'est pas correct
     {
         return(res.status(400).send({message: `Les champs email et password sont obligatoires.`}));
     }
 
-    const emailHash = await getPassword(email);
-    const verifSql = `SELECT motDePasse FROM compteEmployes WHERE email='${email}';`;
-    const ok = await verifyPassword(password, emailHash);
+    const emailHash = await getPassword(email); // Récupérer le mailmot de passe haché de l'utilisateur dans la bdd
+    const ok = await verifyPassword(password, emailHash); // Vérifier le mot de passe si le même true or false
 
-    if(ok)
+    if(ok) // Si mdp correspond
     {
         const sql = `SELECT email, motDePasse FROM compteEmployes WHERE email='${email}' AND motDePasse = '${password}';`;
 
-        db.query(sql, (err, results) => {
-            console.log(`Requete envoyee pour savoir si le compte avec l'email ${email} existe et si le mot 
-            de passe correspond.`);
+        db.query(sql, (err, results) => { // Requête pour savoir si le compte existe
+            console.log(`Requete envoyee pour savoir si le compte avec l'email ${email} existe et si le mot de passe correspond.`);
 
-            if(err)
+            if(err) // Si erreur
             {
                 console.error(`Erreur lors de l'obtention des informations de compte utilisateur : `, err);
                 res.status(500).send({error: "Erreur serveur"});
             }
-            else
+            else // Sinon
             {
                 console.log(`L'utilisateur avec l'email ${email} existe`);
                 res.status(200).send({message: `Les informations de conenxion sont bien correctes.`})
             }
         });
     }
-    else
+    else // ID ou mdp non valable
     {
         return res.status(404).send({message: `Identifiant ou mot de passe incorrect.`});
     }
@@ -110,7 +108,6 @@ async function verifyUser(req, res)
 
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
-// const urlencodedParser = bodyParser.urlencoded();
 
 router.get('/', (req, res) => {
     const data = {};

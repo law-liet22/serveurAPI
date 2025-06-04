@@ -1,4 +1,10 @@
 require('dotenv').config();
+// const fs = require('fs');
+// const https = require('https');
+
+// const privateKey = fs.readFileSync('./ssl/key.pem', 'utf8'); // Clé privée ssl
+// const certificate = fs.readFileSync('./ssl/cert.pem', 'utf8'); // Certificat ssl
+// const credentials = {key: privateKey, cert: certificate}; 
 
 function retourLigne(nbrBr = 1)
 {
@@ -49,5 +55,8 @@ app.use(firsEndpoint + '/lampes', lampesRoute);
 app.use(firsEndpoint + '/comptes/employes', comptesRoute);
 
 // Demarrer le serveur
+// const httpsServer = https.createServer(credentials, app);
 app.listen(PORT, () => console.log(`Serveur API sur http://localhost:${PORT}`));
+// httpsServer.listen(PORT, () => console.log(`Serveur API sur http://localhost:${PORT}`));
 retourLigne(2);
+
